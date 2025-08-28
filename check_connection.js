@@ -1,7 +1,7 @@
 (function(window) {
     'usestrictest';
 
-    console.log('Start checking connection..');
+    alert('Start checking connection..');
 
     const TARGET_CONSTRUCTOR_NAMES = ['Cabinet_new', 'Bardesk_new', 'Shelve_new', 'Model_new', 'Shaft'];
     const foundConstructors = {};
