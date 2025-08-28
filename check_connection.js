@@ -1,41 +1,37 @@
+// rotate_acc_block.js
 (function(window) {
-    'usestrictest';
+  'use strict';
 
-    alert('Start checking connection..');
+  console.log("Rotate material script for acc_block loaded");
 
-    const TARGET_CONSTRUCTOR_NAMES = ['Cabinet_new', 'Bardesk_new', 'Shelve_new', 'Model_new', 'Shaft'];
-    const foundConstructors = {};
-    const checkResults = {
-        connected: false,
-        constructors: {},
-    };
+  // Вешаем обработчик клика
+  document.addEventListener("click", function(e) {
+    if (e.target && e.target.classList.contains("rotate-material-btn")) {
+      let block = e.target.closest(".acc_block");
+      if (!block) return;
 
-    function findConstructors() {
-        TARGET_CONSTRUCTOR_NAMES.forEach(name => {
-            if (foundConstructors[name]) return;
-            
-            if (typeof window[name] === 'function') {
-                foundConstructors[name] = window[name];
-                checkResults.constructors[name] = {
-                    found: true,
-                    type: 'function',
-                    prototype: Object.keys(window[name].prototype || {}).slice(0, 5)
-                };
-                console.log(`Object: ${name}`);
-            }
-        });
+      // id материала (или объекта)
+      let objId = block.getAttribute("data-object-id");
+      if (!objId) {
+        console.warn("Нет object-id у acc_block");
+        return;
+      }
 
-        
-        if (Object.keys(foundConstructors).length === TARGET_CONSTRUCTOR_NAMES.length) {
-            clearInterval(constructorSearchInterval);
-            checkResults.connected = true;
-            console.log('Connection success');
-        }
+      // ищем объект в глобальной карте (как у фасадов)
+      let targetObj = window.objects_map?.[objId];
+      if (!targetObj) {
+        console.warn("Объект с id", objId, "не найден");
+        return;
+      }
+
+      // вызываем rotate_material из основного кода
+      if (typeof window.rotate_material === "function") {
+        window.rotate_material(targetObj);
+        console.log("Материал объекта", objId, "повёрнут");
+      } else {
+        console.error("rotate_material не найден в window");
+      }
     }
+  });
 
-    const constructorSearchInterval = setInterval(findConstructors, 500);
-
-    setTimeout(() => {
-        clearInterval(constructorSearchInterval);
-    }, 10000);
-})(window)
+})(window);
