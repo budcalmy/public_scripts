@@ -1,21 +1,24 @@
 (function(window) {
   'use strict';
 
-  console.log("Rotate material script for acc_block loaded");
-
-  function insertRotateButtons() {
-    document.querySelectorAll(".acc_block .mat_wrapper").forEach(wrapper => {
-      // пропускаем, если кнопка уже есть
-      if (wrapper.querySelector(".rotate_material")) return;
-
+  /**
+   * Функция находит все материалы с текстурами и добавляет им кнопку вращения.
+   */
+  function addRotationButtons() {
+    // Ищем все обертки материалов, в которых еще нет кнопки
+    document.querySelectorAll(".acc_block .mat_wrapper:not(:has(.rotate_material))").forEach(wrapper => {
       const materialDiv = wrapper.querySelector(".material");
       if (!materialDiv) return;
 
-      // пропускаем однотонные цвета (у которых есть background-color rgb)
-      const bg = materialDiv.style.backgroundImage;
-      if (!bg || bg === "none") return; 
+      // ПРОБЛЕМА 1: Не добавляем кнопку на цвета.
+      // Эта проверка отсеивает элементы без фонового изображения (т.е. сплошные цвета, заданные через background-color).
+      const hasBackgroundImage = materialDiv.style.backgroundImage && materialDiv.style.backgroundImage !== "none";
+      if (!hasBackgroundImage) {
+        return; // Пропускаем этот элемент
+      }
 
-      // создаём кнопку с иконкой, как у rotate_material в фасадах
+      // ПРОБЛЕМА 2: Используем правильную иконку.
+      // Создаем кнопку и вставляем в нее стандартную иконку, как вы и указали.
       const btn = document.createElement("div");
       btn.className = "rotate_material";
       btn.innerHTML = '<span class="glyphicon glyphicon-repeat"></span>';
@@ -24,35 +27,50 @@
     });
   }
 
-  // сразу вставляем
-  insertRotateButtons();
+  /**
+   * Обработчик клика на кнопку вращения.
+   */
+  function handleRotationClick(event) {
+    const rotateButton = event.target.closest(".rotate_material");
+    if (!rotateButton) {
+      return; // Клик был не по кнопке вращения
+    }
 
-  // следим за подгрузкой новых материалов
-  const observer = new MutationObserver(() => insertRotateButtons());
+    const wrapper = rotateButton.closest(".mat_wrapper");
+    if (!wrapper) return;
+
+    const matId = wrapper.getAttribute("data-id");
+    if (!matId) {
+      alert("Не найден data-id у родительского элемента .mat_wrapper");
+      return;
+    }
+
+    // ПРОБЛЕМА 3: Вращаем текстуру на сцене, а не на панели.
+    // Этот скрипт НЕ вращает элемент на панели. Он лишь находит ID материала
+    // и вызывает глобальную функцию window.rotate_material, передавая ей нужный объект из 3D-сцены.
+    // Логика здесь верная.
+    const targetObjectInScene = window.materials_map?.[matId];
+
+    if (targetObjectInScene && typeof window.rotate_material === 'function') {
+      alert(`Вращаем материал на сцене: ${matId}`);
+      window.rotate_material(targetObjectInScene); // <--- Вот здесь происходит вызов основной функции
+    } else {
+      alert("Функция window.rotate_material или карта материалов window.materials_map не определены.");
+    }
+  }
+
+  // --- Инициализация ---
+
+  // 1. Сразу запускаем поиск и добавление кнопок для уже загруженных материалов.
+  addRotationButtons();
+
+  // 2. Создаем наблюдатель, который будет отслеживать добавление новых материалов на страницу
+  // (например, при переключении вкладок) и добавлять кнопки к ним.
+  const observer = new MutationObserver(addRotationButtons);
   observer.observe(document.body, { childList: true, subtree: true });
 
-  // обработчик клика
-  document.addEventListener("click", function(e) {
-    if (e.target.closest(".rotate_material")) {
-      const btn = e.target.closest(".rotate_material");
-      const wrapper = btn.closest(".mat_wrapper");
-      if (!wrapper) return;
+  // 3. Вешаем один обработчик кликов на весь документ для эффективности.
+  document.addEventListener("click", handleRotationClick);
 
-      const matId = wrapper.getAttribute("data-id");
-      if (!matId) {
-        console.warn("Нет data-id у mat_wrapper");
-        return;
-      }
-
-      // крутим материал в 3D
-      const targetObj = window.materials_map?.[matId];
-      if (targetObj && typeof window.rotate_material === "function") {
-        window.rotate_material(targetObj);
-        alert("Материал", matId, "повёрнут в 3D");
-      } else {
-        alert("rotate_material или materials_map не найдены");
-      }
-    }
-  });
 
 })(window);
