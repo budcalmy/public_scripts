@@ -22,10 +22,10 @@
       }
 
       // Пропускаем материалы-цвета
-      const hasBackgroundImage = materialDiv.style.backgroundImage && materialDiv.style.backgroundImage !== "none";
-      if (!hasBackgroundImage) {
-        return;
-      }
+      // const hasBackgroundImage = materialDiv.style.backgroundImage && materialDiv.style.backgroundImage !== "none";
+      // if (!hasBackgroundImage) {
+      //   return;
+      // }
 
       // Создаем кнопку. jQuery обработчик ниже сам найдет ее.
       const btn = document.createElement("div");
