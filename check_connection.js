@@ -7,7 +7,7 @@
   }
 
   function addRotationButtons() {
-    const materialWrappers = document.querySelectorAll(".acc_block .mat_wrapper:not(:has(.custom-rotate-btn))");
+    const materialWrappers = document.querySelectorAll(".acc_block .mat_wrapper:not(:has(.rotate_material))");
     
     materialWrappers.forEach(wrapper => {
       const materialDiv = wrapper.querySelector(".material");
@@ -30,7 +30,7 @@
     const $wrapper = $(wrapper);
     
     // Пытаемся найти оригинальную кнопку поворота и скопировать её поведение
-    const originalBtn = wrapper.querySelector('.rotate_material');
+    const originalBtn = wrapper.querySelector('.rotate_material:not(.custom-rotate-btn)');
     
     if (originalBtn) {
       // Если есть оригинальная кнопка, имитируем клик по ней
