@@ -18,12 +18,7 @@
       // создаём кнопку с иконкой, как у rotate_material в фасадах
       const btn = document.createElement("div");
       btn.className = "rotate_material";
-      btn.title = "Повернуть материал";
       btn.innerHTML = '<span class="glyphicon glyphicon-repeat"></span>';
-      btn.style.cursor = "pointer";
-      btn.style.display = "inline-block";
-      btn.style.marginLeft = "6px";
-      btn.style.userSelect = "none";
 
       wrapper.appendChild(btn);
     });
@@ -53,9 +48,9 @@
       const targetObj = window.materials_map?.[matId];
       if (targetObj && typeof window.rotate_material === "function") {
         window.rotate_material(targetObj);
-        console.log("Материал", matId, "повёрнут в 3D");
+        alert("Материал", matId, "повёрнут в 3D");
       } else {
-        console.error("rotate_material или materials_map не найдены");
+        alert("rotate_material или materials_map не найдены");
       }
     }
   });
