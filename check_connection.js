@@ -30,7 +30,7 @@
       // Создаем кнопку. jQuery обработчик ниже сам найдет ее.
       const btn = document.createElement("div");
       btn.className = "rotate_material";
-      btn.innerHTML = '<span class="glyphicon glyphicon-repeat"></span>';
+      btn.innerHTML = '<span class="glyphicon glyphicon-repeat" style="padding-left: 5px; color: #ffffff;"></span>';
 
       wrapper.appendChild(btn);
     });
