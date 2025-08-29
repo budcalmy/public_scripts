@@ -1,5 +1,11 @@
-(function(window) {
+(function(window, $) {
   'use strict';
+
+  // Проверяем, загружен ли jQuery
+  if (!$) {
+    alert('jQuery не найден. Скрипт не может быть выполнен.');
+    return;
+  }
 
   /**
    * Функция находит все материалы с текстурами, у которых еще нет кнопки вращения,
@@ -15,14 +21,13 @@
         return;
       }
 
-      // Пропускаем материалы, у которых нет фонового изображения (т.е. это просто цвет).
+      // Пропускаем материалы-цвета
       const hasBackgroundImage = materialDiv.style.backgroundImage && materialDiv.style.backgroundImage !== "none";
       if (!hasBackgroundImage) {
         return;
       }
 
-      // Создаем кнопку с правильным классом и иконкой.
-      // Существующий на странице обработчик из libs.min.js сам найдет эту кнопку по классу ".rotate_material".
+      // Создаем кнопку. jQuery обработчик ниже сам найдет ее.
       const btn = document.createElement("div");
       btn.className = "rotate_material";
       btn.innerHTML = '<span class="glyphicon glyphicon-repeat"></span>';
@@ -31,19 +36,52 @@
     });
   }
 
-  // --- Инициализация скрипта ---
+  // --- Инициализация добавления кнопок ---
 
-  // 1. Сразу запускаем добавление кнопок для элементов, которые уже есть на странице.
+  // 1. Сразу запускаем для элементов, которые уже есть на странице.
   addRotationButtons();
 
-  // 2. Создаем наблюдатель (MutationObserver), который будет следить за появлением новых
-  // материалов (например, при подгрузке) и вызывать для них addRotationButtons.
+  // 2. Наблюдаем за появлением новых материалов в DOM.
   const observer = new MutationObserver(addRotationButtons);
   observer.observe(document.body, {
-    childList: true, // следить за добавлением/удалением дочерних элементов
-    subtree: true   // следить во всем поддереве, а не только в document.body
+    childList: true,
+    subtree: true
   });
 
-  console.log("Скрипт добавления кнопок вращения успешно инициализирован.");
 
-})(window);
+  // --- ОБРАБОТЧИК КЛИКОВ (РЕШЕНИЕ ПРОБЛЕМЫ) ---
+
+  // Мы вешаем свой собственный делегированный обработчик на document.body.
+  // Он будет работать для ВСЕХ кнопок .rotate_material, включая те,
+  // что находятся в "проблемной" панели.
+  $(document.body).on('click', '.acc_block .rotate_material', function() {
+    // 'this' здесь — это элемент .rotate_material, по которому кликнули
+    const wrapper = $(this).closest(".mat_wrapper");
+
+    if (!wrapper.length) {
+      return;
+    }
+
+    const matId = wrapper.data("id"); // Используем .data() из jQuery для получения data-id
+    if (!matId) {
+      alert("Не найден data-id у .mat_wrapper");
+      return;
+    }
+
+    // Эта логика теперь сработает, так как обработчик вызывается в нужный момент,
+    // когда все глобальные объекты и функции уже определены.
+    const targetObj = window.materials_map?.[matId];
+
+    if (targetObj && typeof window.rotate_material === "function") {
+      alert(`Вращаем материал ${matId} через наш обработчик.`);
+      window.rotate_material(targetObj);
+    } else {
+      // Эта ошибка теперь не должна появляться
+      alert("Функция window.rotate_material или карта материалов window.materials_map не определены.");
+    }
+  });
+
+
+  alert("Скрипт вращения материалов с собственным обработчиком инициализирован.");
+
+})(window, window.jQuery);
