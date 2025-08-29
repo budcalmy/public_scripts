@@ -49,38 +49,6 @@
   });
 
 
-  // --- ОБРАБОТЧИК КЛИКОВ (РЕШЕНИЕ ПРОБЛЕМЫ) ---
-
-  // Мы вешаем свой собственный делегированный обработчик на document.body.
-  // Он будет работать для ВСЕХ кнопок .rotate_material, включая те,
-  // что находятся в "проблемной" панели.
-  $(document.body).on('click', '.acc_block .rotate_material', function() {
-    // 'this' здесь — это элемент .rotate_material, по которому кликнули
-    const wrapper = $(this).closest(".mat_wrapper");
-
-    if (!wrapper.length) {
-      return;
-    }
-
-    const matId = wrapper.data("id"); // Используем .data() из jQuery для получения data-id
-    if (!matId) {
-      alert("Не найден data-id у .mat_wrapper");
-      return;
-    }
-
-    // Эта логика теперь сработает, так как обработчик вызывается в нужный момент,
-    // когда все глобальные объекты и функции уже определены.
-    const targetObj = window.materials_map?.[matId];
-
-    if (targetObj && typeof window.rotate_material === "function") {
-      alert(`Вращаем материал ${matId} через наш обработчик.`);
-      window.rotate_material(targetObj);
-    } else {
-      // Эта ошибка теперь не должна появляться
-      alert("Функция window.rotate_material или карта материалов window.materials_map не определены.");
-    }
-  });
-
 
   alert("Скрипт вращения материалов с собственным обработчиком инициализирован.");
 
