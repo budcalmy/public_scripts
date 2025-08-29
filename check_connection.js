@@ -30,7 +30,7 @@
     const $wrapper = $(wrapper);
     
     // Пытаемся найти оригинальную кнопку поворота и скопировать её поведение
-    const originalBtn = wrapper.querySelector('.rotate_material:not(.custom-rotate-btn)');
+    const originalBtn = wrapper.querySelector('.rotate_material');
     
     if (originalBtn) {
       // Если есть оригинальная кнопка, имитируем клик по ней
@@ -47,7 +47,7 @@
         } else if (typeof window.rotate_material === 'function') {
           window.rotate_material(materialId);
         } else {
-          console.log('Функция поворота не найдена для материала ID:', materialId);
+          alert('Функция поворота не найдена для материала ID:', materialId);
         }
       }
     }
